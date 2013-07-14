@@ -1,8 +1,8 @@
 #!/bin/bash
 
-INDEX=../thumbs/index.html
+INDEX={{ www_root }}/index.html
+THUMBS={{ www_root }}/thumbs
 
-cd scans
 
 cat > $INDEX <<EOF
 <html>
@@ -29,16 +29,18 @@ cat > $INDEX <<EOF
 </head>
 
 <body>
-<a class="button" href="\\scanner\scans">Open scan folder</a>
+<a class="button" href="{{ share }}">Open scan folder</a>
 <h1>Scanner server</h1>
 EOF
 
+cd {{ scan_root }}
 
 for f in `ls`
 do
-    if [ ! -e ../thumbs/$f ];
+    THUMB=$THUMBS/$f
+    if [ ! -e $THUMB ];
     then
-	convert $f -resize 300x300 ../thumbs/$f
+	convert $f -resize 300x300 $THUMB
     fi
 
     cat >> $INDEX <<EOF

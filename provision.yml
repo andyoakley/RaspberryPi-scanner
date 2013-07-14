@@ -20,21 +20,22 @@
     file: state=directory path=${scan_root} mode=0777
 
   - name: Install buttonpressed script
-    template: src=files/buttonpressed.j2 dest=/etc/scanbuttond/buttonpressed.sh mode=0755
+    template: src=files/buttonpressed.sh.j2 dest=/etc/scanbuttond/buttonpressed.sh mode=0755
 
   - name: Enable scanbuttond
-    template: src=files/scanbuttond.j2 dest=/etc/default/scanbuttond
+    template: src=files/default-scanbuttond.j2 dest=/etc/default/scanbuttond
 
   - name: Set up samba
-    template: src=files/smb.j2 dest=/etc/samba/smb.conf
+    template: src=files/smb.conf.j2 dest=/etc/samba/smb.conf
 
   - name: Remove default web page
-    file: path=/var/www/index.lighttpd.html state=absent
+    file: path=${www_root}/index.lighttpd.html state=absent
 
-  - name: Add new web pages
-    copy: src=$item dest=/var/www
-    with_fileglob:
-    - files/www/*
+  - name: Create thumbnail folder
+    file: path=${www_root}/thumbs state=directory
+
+  - name: Install web page builder
+    template: src=files/create-web-thumbnails.sh.j2 dest=/etc/scanbuttond/create-web-thumbnails.sh mode=0755
 
   - name: Start scanbuttond
     service: name=scanbuttond state=started enabled=yes

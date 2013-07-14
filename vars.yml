@@ -1,5 +1,7 @@
 ---
 scan_root: /var/scans
+www_root: /var/www
+share: \\scanner\scans
 system_packages:
  - sane
  - imagemagick
