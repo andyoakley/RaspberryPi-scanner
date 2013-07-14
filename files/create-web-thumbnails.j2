@@ -1,0 +1,62 @@
+#!/bin/bash
+
+INDEX=../thumbs/index.html
+
+cd scans
+
+cat > $INDEX <<EOF
+<html>
+<head>
+<style>
+  body { font-family: Arial }
+
+  .thumb { 
+     border: 1px dotted #cfcfcf; 
+     padding: 20px;
+     margin: 20px;
+  }
+
+  .button {
+    background: yellow;
+    padding: 10px;
+    float: right;
+    text-decoration: none;
+    color: black;
+    border: 1px solid orange;
+  }
+</style>
+<title>Scanner server</title>
+</head>
+
+<body>
+<a class="button" href="\\scanner\scans">Open scan folder</a>
+<h1>Scanner server</h1>
+EOF
+
+
+for f in `ls`
+do
+    if [ ! -e ../thumbs/$f ];
+    then
+	convert $f -resize 300x300 ../thumbs/$f
+    fi
+
+    cat >> $INDEX <<EOF
+<a href="$f">
+<img src="$f" class="thumb" />
+</a>
+EOF
+done
+
+if [ `ls | wc -l` -eq "0" ];
+then
+    echo "<p>No scans here yet. Press a front button to scan.</p>" >> $INDEX
+fi
+
+
+cat >> $INDEX <<EOF
+  </body>
+  </html>
+EOF
+
+

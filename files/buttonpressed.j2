@@ -1,0 +1,25 @@
+#!/bin/bash
+
+DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+TIF=/tmp/$DATE.tif
+JPG={{ scan_root }}/$DATE.jpg
+
+case $1 in
+    1)
+	scanimage -x 210 -y 297 --format=tiff --mode color --resolution 300 > $TIF
+	;;
+    2)
+	scanimage -x 210 -y 297 --format=tiff --mode gray --resolution 300 > $TIF
+	;;
+    3)
+	scanimage -x 210 -y 297 --format=tiff --mode lineart --resolution 300 > $TIF
+	;;
+    4)
+	exit
+	;;
+esac
+
+convert $TIF $JPG
+rm $TIF
+
+

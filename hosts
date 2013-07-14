@@ -1,0 +1,2 @@
+[rpi]
+scanner ansible_ssh_user=pi

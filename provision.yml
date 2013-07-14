@@ -1,0 +1,46 @@
+---
+- hosts: rpi
+  vars_files:
+    - vars.yml
+  gather_facts: false
+  sudo: true
+
+  tasks:
+  - name: Install python-apt
+    shell: sudo apt-get -y install python-apt
+
+  - name: Install required system packages.
+    apt: pkg=${item} state=installed update-cache=yes 
+    with_items: ${system_packages}
+
+  - name: Update system packages
+    apt: upgrade=yes
+
+  - name: Create the scans directory
+    file: state=directory path=${scan_root} mode=0777
+
+  - name: Install buttonpressed script
+    template: src=files/buttonpressed.j2 dest=/etc/scanbuttond/buttonpressed.sh mode=0755
+
+  - name: Enable scanbuttond
+    template: src=files/scanbuttond.j2 dest=/etc/default/scanbuttond
+
+  - name: Set up samba
+    template: src=files/smb.j2 dest=/etc/samba/smb.conf
+
+  - name: Remove default web page
+    file: path=/var/www/index.lighttpd.html state=absent
+
+  - name: Add new web pages
+    copy: src=$item dest=/var/www
+    with_fileglob:
+    - files/www/*
+
+  - name: Start scanbuttond
+    service: name=scanbuttond state=started enabled=yes
+
+  - name: Start lighttpd
+    service: name=lighttpd state=started enabled=yes
+
+  - name: Start samba
+    service: name=samba state=started enabled=yes
